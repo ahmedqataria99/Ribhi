@@ -1,7 +1,7 @@
 import 'package:ribhi/features/Expenses/data/datasource/ExpensesDataStore.dart';
 import 'package:ribhi/features/Expenses/data/models/ExpensesModel.dart';
 import 'package:ribhi/features/Expenses/domain/entity/Expenses.dart';
-import 'package:ribhi/features/Expenses/domain/repo/ExpensesRepo';
+import 'package:ribhi/features/Expenses/domain/repo/ExpensesRepo.dart';
 
 class ExpenseRepositoryImpl implements ExpenseRepository {
   final ExpenseLocalDataSource local;

@@ -1,106 +1,57 @@
-import 'package:ribhi/core/database/Appdatabase.dart';
 import 'package:ribhi/features/products/data/datasources/ProductLocalData.dart';
 import 'package:ribhi/features/products/data/model/ProductModel.dart';
+import 'package:ribhi/features/products/domain/entities/products.dart';
+import 'package:ribhi/features/products/domain/repo/ProductRepo.dart';
 
-class ProductLocalDataSourceImpl implements ProductLocalDataSource {
-  final AppDatabase db;
+class ProductRepositoryImpl implements ProductRepository {
+  final ProductLocalDataSource local;
 
-  ProductLocalDataSourceImpl(this.db);
+  ProductRepositoryImpl(this.local);
 
-  // 🔹 Get product by ID
   @override
-  Future<ProductModel?> getById(int id) async {
-    final result = await db.query(
-      'products',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-
-    if (result.isEmpty) return null;
-
-    return ProductModel.fromMap(result.first);
+  Future<Product?> getById(int id) async {
+    final model = await local.getById(id);
+    return model?.toEntity();
   }
 
-  // 🔹 Get all products
   @override
-  Future<List<ProductModel>> getAll() async {
-    final result = await db.query(
-      'products',
-      orderBy: 'created_at DESC',
-    );
-
-    return result.map(ProductModel.fromMap).toList();
+  Future<List<Product>> getAll() async {
+    final models = await local.getAll();
+    return models.map((m) => m.toEntity()).toList();
   }
 
-  // 🔹 Insert product
   @override
-  Future<void> insert(ProductModel model) async {
-    await db.insert(
-      'products',
-      model.toMap(),
-    );
+  Future<void> add(Product product) async {
+    final model = ProductModel.fromEntity(product);
+    await local.insert(model);
   }
 
-  // 🔹 Update product
   @override
-  Future<void> update(ProductModel model) async {
-    if (model.id == null) {
-      throw Exception('Product ID cannot be null when updating.');
-    }
-
-    await db.update(
-      'products',
-      model.toMap(),
-      where: 'id = ?',
-      whereArgs: [model.id],
-    );
+  Future<void> update(Product product) async {
+    final model = ProductModel.fromEntity(product);
+    await local.update(model);
   }
 
-  // 🔹 Delete product
   @override
   Future<void> delete(int id) async {
-    await db.delete(
-      'products',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await local.delete(id);
   }
 
-  // 🔹 Search by name
   @override
-  Future<List<ProductModel>> search(String keyword) async {
-    final result = await db.query(
-      'products',
-      where: 'name LIKE ?',
-      whereArgs: ['%$keyword%'],
-      orderBy: 'created_at DESC',
-    );
-
-    return result.map(ProductModel.fromMap).toList();
+  Future<List<Product>> search(String keyword) async {
+    final models = await local.search(keyword);
+    return models.map((m) => m.toEntity()).toList();
   }
 
-  // 🔹 Filter by category
   @override
-  Future<List<ProductModel>> filterByCategory(String category) async {
-    final result = await db.query(
-      'products',
-      where: 'category = ?',
-      whereArgs: [category],
-      orderBy: 'created_at DESC',
-    );
-
-    return result.map(ProductModel.fromMap).toList();
+  Future<List<Product>> filterByCategory(String category) async {
+    final models = await local.filterByCategory(category);
+    return models.map((m) => m.toEntity()).toList();
   }
 
-  // 🔹 Get low stock products
   @override
-  Future<List<ProductModel>> getLowStock() async {
-    final result = await db.query(
-      'products',
-      where: 'quantity <= min_stock_level',
-      orderBy: 'quantity ASC',
-    );
-
-    return result.map(ProductModel.fromMap).toList();
+  Future<List<Product>> getLowStock() async {
+    final models = await local.getLowStock();
+    return models.map((m) => m.toEntity()).toList();
   }
 }
