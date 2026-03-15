@@ -5,6 +5,10 @@ class Product {
   final double sellPrice;
   final int quantity;
   final String category;
+
+  /// نوع الوحدة: Kilogram / Gram / Piece
+  final String? categoryType;
+
   final int minStockLevel;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -16,6 +20,7 @@ class Product {
     required this.sellPrice,
     required this.quantity,
     required this.category,
+    this.categoryType,
     required this.minStockLevel,
     required this.createdAt,
     required this.updatedAt,
@@ -32,6 +37,7 @@ class Product {
     double? sellPrice,
     int? quantity,
     String? category,
+    String? categoryType,
     int? minStockLevel,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -43,6 +49,7 @@ class Product {
       sellPrice: sellPrice ?? this.sellPrice,
       quantity: quantity ?? this.quantity,
       category: category ?? this.category,
+      categoryType: categoryType ?? this.categoryType,
       minStockLevel: minStockLevel ?? this.minStockLevel,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

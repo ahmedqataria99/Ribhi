@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:ribhi/features/products/presentation/UI/screens/productsformScreen.dart';
-
 import 'package:ribhi/features/products/presentation/UI/widgets/Categories.dart';
 import 'package:ribhi/features/products/presentation/UI/widgets/Search.dart';
 import 'package:ribhi/features/products/presentation/UI/widgets/productcard.dart';
@@ -19,7 +17,6 @@ class Productscreenbody extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          const Gap(50),
           Search(),
           const Gap(20),
           CategoryFilterBar(),
@@ -41,35 +38,7 @@ class Productscreenbody extends StatelessWidget {
               },
             ),
           ),
-          Spacer(),
-          Row(
-            children: [
-              Spacer(),
-          CircleAvatar(
-              radius: 28,
-              backgroundColor: const Color(0xFFF54500),
-
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Productsformscreen(),
-                    ),
-                  );
-                },
-
-                icon: const Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 28,
-                ),
-              ),
-            )],
-          ),
+          
         ],
       ),
     );

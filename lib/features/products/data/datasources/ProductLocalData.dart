@@ -17,6 +17,14 @@ abstract class ProductLocalDataSource {
   Future<List<ProductModel>> filterByCategory(String category);
 
   Future<List<ProductModel>> getLowStock();
+
+  Future<void> addCategory({required String name, required String type});
+
+  Future<List<String>> getCategories();
+
+  Future<void> updateCategory(String oldName, String newName);
+
+  Future<void> deleteCategory(String category); 
 }
 
 class ProductLocalDataSourceImpl implements ProductLocalDataSource {
@@ -27,11 +35,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
   // 🔹 Get product by ID
   @override
   Future<ProductModel?> getById(int id) async {
-    final result = await db.query(
-      'products',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    final result = await db.query('products', where: 'id = ?', whereArgs: [id]);
 
     if (result.isEmpty) return null;
 
@@ -41,10 +45,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
   // 🔹 Get all products
   @override
   Future<List<ProductModel>> getAll() async {
-    final result = await db.query(
-      'products',
-      orderBy: 'created_at DESC',
-    );
+    final result = await db.query('products', orderBy: 'created_at DESC');
 
     return result.map(ProductModel.fromMap).toList();
   }
@@ -52,10 +53,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
   // 🔹 Insert product
   @override
   Future<void> insert(ProductModel model) async {
-    await db.insert(
-      'products',
-      model.toMap(),
-    );
+    await db.insert('products', model.toMap());
   }
 
   // 🔹 Update product
@@ -72,11 +70,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
   // 🔹 Delete product
   @override
   Future<void> delete(int id) async {
-    await db.delete(
-      'products',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.delete('products', where: 'id = ?', whereArgs: [id]);
   }
 
   // 🔹 Search by name
@@ -112,5 +106,57 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
     );
 
     return result.map(ProductModel.fromMap).toList();
+  }
+
+  @override
+  Future<void> addCategory({required String name, required String type}) async {
+    try {
+      await db.insert('categories', {
+        'name': name.trim(),
+        'type': type.toLowerCase(),
+        'created_at': DateTime.now().toIso8601String(),
+      });
+    } catch (e) {
+      print('Error adding category: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<String>> getCategories() async {
+    try {
+      final result = await db.query('categories');
+      return result.map((e) => (e['name'] ?? '').toString()).toList();
+    } catch (e) {
+      print('Error getting categories: $e');
+      return [];
+    }
+  }
+
+  @override
+  Future<void> deleteCategory(String category) async {
+    try {
+      await db.delete('categories', where: 'name = ?', whereArgs: [category]);
+
+      await db.delete('products', where: 'category = ?', whereArgs: [category]);
+    } catch (e) {
+      print('Error deleting category: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateCategory(String oldName, String newName) async {
+    try {
+      await db.update(
+        'categories',
+        {'name': newName},
+        where: 'name = ?',
+        whereArgs: [oldName],
+      );
+    } catch (e) {
+      print('Error updating category: $e');
+      rethrow;
+    }
   }
 }

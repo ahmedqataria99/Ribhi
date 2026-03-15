@@ -1,11 +1,11 @@
 import 'package:ribhi/core/database/Appdatabase.dart';
 import 'package:ribhi/core/errors/AppExeptions.dart';
 import 'package:ribhi/features/products/data/datasources/ProductLocalData.dart';
+import 'package:ribhi/features/products/data/model/ProductModel.dart';
 import 'package:ribhi/features/sales/data/datastore/saleDataSource.dart';
 import 'package:ribhi/features/sales/data/model/SaleModel.dart';
 import 'package:ribhi/features/sales/domain/entity/sale.dart';
 import 'package:ribhi/features/sales/domain/repo/SaleRepo.dart';
-
 
 class SaleRepositoryImpl implements SaleRepository {
   final AppDatabase db;
@@ -23,10 +23,17 @@ class SaleRepositoryImpl implements SaleRepository {
     required int productId,
     required int quantity,
   }) async {
+
     await db.transaction(() async {
-      final products = await productLocal.getAll();
-      final product =
-          products.firstWhere((p) => p.id == productId);
+
+      final productModel = await productLocal.getById(productId);
+
+      if (productModel == null) {
+        throw AppException("Product not found");
+      }
+
+      /// تحويل Model → Entity
+      final product = productModel.toEntity();
 
       if (product.quantity < quantity) {
         throw AppException("Not enough stock");
@@ -44,7 +51,10 @@ class SaleRepositoryImpl implements SaleRepository {
         updatedAt: DateTime.now(),
       );
 
-      await productLocal.update(updatedProduct);
+      /// تحويل Entity → Model قبل update
+      await productLocal.update(
+        ProductModel.fromEntity(updatedProduct),
+      );
 
       final sale = SaleModel(
         productId: productId,

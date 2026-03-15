@@ -54,4 +54,22 @@ class ProductRepositoryImpl implements ProductRepository {
     final models = await local.getLowStock();
     return models.map((m) => m.toEntity()).toList();
   }
+
+  @override
+  Future<void> addCategory({required String name, required String type}) async {
+    await local.addCategory(name: name, type: type);
+  }
+
+  @override
+  Future<List<String>> getCategories() async {
+    return await local.getCategories();
+  }
+  @override
+  Future<void> deleteCategory(String category) async {
+    await local.deleteCategory(category);
+  }
+  @override
+  Future<void> updateCategory(String oldName, String newName) async {
+    await local.updateCategory(oldName, newName);
+  }
 }

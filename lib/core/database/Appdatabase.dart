@@ -1,3 +1,4 @@
+
 abstract class AppDatabase {
   Future<List<Map<String, dynamic>>> query(
     String table, {
@@ -6,7 +7,7 @@ abstract class AppDatabase {
     String? orderBy,
   });
 
-  Future<int> insert(String table, Map<String, dynamic> values);
+  Future<int> insert(String table, Map<String, dynamic> values, );
 
   Future<int> update(
     String table,
