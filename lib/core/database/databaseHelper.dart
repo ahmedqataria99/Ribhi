@@ -21,7 +21,7 @@ class DatabaseHelper implements AppDatabase {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 4,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -37,6 +37,20 @@ class DatabaseHelper implements AppDatabase {
             type TEXT NOT NULL,
             created_at TEXT
           )
+          ''');
+        }
+        if (oldVersion < 3) {
+          await db.execute(
+            'ALTER TABLE products ADD COLUMN category_type TEXT',
+          );
+        }
+        if (oldVersion < 4) {
+          // ✅ المنتجات القديمة كان min_stock_level = 1 hardcoded
+          // نحدثها تلقائياً: الـ limit = 20% من الـ quantity (minimum 1)
+          await db.execute('''
+            UPDATE products
+            SET min_stock_level = MAX(1, ROUND(quantity * 0.2))
+            WHERE min_stock_level <= 1
           ''');
         }
       },

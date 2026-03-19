@@ -1,41 +1,227 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:ribhi/core/constant/text.dart';
+import 'package:ribhi/core/AppColor/appcolor.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
+import 'package:ribhi/features/Expenses/domain/repo/ExpensesRepo.dart';
+import 'package:ribhi/features/Expenses/presentation/cubit/expenses_cubit.dart';
+import 'package:ribhi/features/Expenses/presentation/ui/screens/ExpensesScreen.dart';
+import 'package:ribhi/features/products/data/datasources/ProductLocalData.dart';
+import 'package:ribhi/features/products/data/repo/ProductRepoImplment.dart';
+import 'package:ribhi/features/products/presentation/Statemanegemnt/products_cubit.dart';
+import 'package:ribhi/features/products/presentation/Statemanegemnt/products_state.dart';
 import 'package:ribhi/features/products/presentation/UI/screens/productsformScreen.dart';
+import 'package:ribhi/features/products/presentation/UI/widgets/ProductScreenBody.dart';
+import 'package:ribhi/features/reports/data/repo/ReportRepoImpl.dart';
+import 'package:ribhi/features/reports/presentation/manager/cubit/reports_cubit.dart';
+import 'package:ribhi/features/reports/presentation/ui/screens/ReportsScreen.dart';
+import 'package:ribhi/features/sales/data/repo/SaleRepoImpl.dart';
+import 'package:ribhi/features/sales/presentation/UI.dart';
 
-import '../../Statemanegemnt/products_cubit.dart';
-import '../../Statemanegemnt/products_state.dart';
+class _AppIcons {
+  static const home = 'assets/photo/iconamoon_category-light.png';
+  static const product = 'assets/photo/fluent-mdl2_product.png';
+  static const sales = 'assets/photo/Frame 197 (1).png';
+  static const expenses = 'assets/photo/iconoir_wallet.png';
+  static const chart = 'assets/photo/carbon_analytics.png';
+}
 
-import '../widgets/ProductScreenBody.dart';
+/// ✅ Delete Dialog
+class DeleteDialog extends StatelessWidget {
+  final int productId;
 
-class ProductsScreen extends StatelessWidget {
-  const ProductsScreen({super.key});
+  const DeleteDialog({super.key, required this.productId});
 
   @override
   Widget build(BuildContext context) {
-    return const _ProductsScreenView();
+    final s = AppSizes.s;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(horizontal: s(context, 24)),
+      child: Container(
+        padding: EdgeInsets.all(s(context, 16)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(s(context, 12)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Are you sure you want to delete?",
+              style: TextStyle(
+                fontSize: s(context, 14),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: s(context, 16)),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Cancel"),
+                  ),
+                ),
+                SizedBox(width: s(context, 8)),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      context.read<ProductsCubit>().deleteProduct(productId);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.red,
+                    ),
+                    child: const Text(
+                      "Delete",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
 
-class _ProductsScreenView extends StatelessWidget {
-  const _ProductsScreenView();
+/// ✅ Animation Route
+class _NavRoute extends PageRouteBuilder {
+  _NavRoute({required Widget page})
+      : super(
+          pageBuilder: (_, __, ___) => page,
+          transitionsBuilder: (_, anim, __, child) {
+            final curved = CurvedAnimation(
+              parent: anim,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            );
+            return SlideTransition(
+              position: Tween(
+                begin: const Offset(0, 0.06),
+                end: Offset.zero,
+              ).animate(curved),
+              child: FadeTransition(opacity: curved, child: child),
+            );
+          },
+        );
+}
+
+/// ✅ Main Screen
+class ProductsScreen extends StatefulWidget {
+  final ExpenseRepository expensesRepository;
+  final ReportsRepositoryImpl reportsRepository;
+  final ProductRepositoryImpl productsRepository;
+  final SaleRepositoryImpl saleRepository;
+  final ProductLocalDataSourceImpl productLocalDataSource;
+
+  const ProductsScreen({
+    super.key,
+    required this.expensesRepository,
+    required this.reportsRepository,
+    required this.productsRepository,
+    required this.saleRepository,
+    required this.productLocalDataSource,
+  });
+
+  @override
+  State<ProductsScreen> createState() => _ProductsScreenState();
+}
+
+class _ProductsScreenState extends State<ProductsScreen> {
+  static const int _activeIndex = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProductsCubit>().loadProducts();
+  }
+
+  void _navigateTo(int i) {
+    if (i == _activeIndex) return;
+
+    if (i == 0) {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    } else if (i == 2) {
+      Navigator.pushReplacement(
+        context,
+        _NavRoute(
+          page: SalesScreen(
+            saleRepository: widget.saleRepository,
+            productLocalDataSource: widget.productLocalDataSource,
+            expensesRepository: widget.expensesRepository,
+            reportsRepository: widget.reportsRepository,
+            productsRepository: widget.productsRepository,
+          ),
+        ),
+      );
+    } else if (i == 3) {
+      Navigator.pushReplacement(
+        context,
+        _NavRoute(
+          page: BlocProvider(
+            create: (_) => ExpensesCubit(
+              repository: widget.expensesRepository,
+            )..loadExpenses(),
+            child: ExpensesScreen(
+              expensesRepository: widget.expensesRepository,
+              reportsRepository: widget.reportsRepository,
+              productsRepository: widget.productsRepository,
+              saleRepository: widget.saleRepository,
+              productLocalDataSource: widget.productLocalDataSource,
+            ),
+          ),
+        ),
+      );
+    } else if (i == 4) {
+      Navigator.pushReplacement(
+        context,
+        _NavRoute(
+          page: BlocProvider(
+            create: (_) =>
+                ReportsCubit(repository: widget.reportsRepository),
+            child: ReportsScreen(
+              reportsRepository: widget.reportsRepository,
+              expensesRepository: widget.expensesRepository,
+              productsRepository: widget.productsRepository,
+              saleRepository: widget.saleRepository,
+              productLocalDataSource: widget.productLocalDataSource,
+            ),
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
+
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.category, color: Color(0xFFF54500)),
-            onPressed: () {
-              showCategoriesPopup(context);
-            },
+            icon: Icon(
+              Icons.category,
+              color: AppColors.orange,
+              size: s(context, 22),
+            ),
+            onPressed: () => showCategoriesPopup(context),
           ),
         ],
       ),
+
+      /// ➕ Add
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.green,
         onPressed: () {
           Navigator.push(
             context,
@@ -47,154 +233,99 @@ class _ProductsScreenView extends StatelessWidget {
             ),
           );
         },
-
-        child: CircleAvatar(
-          radius: 28,
-          backgroundColor: Color(0xFF16A34A),
-          child: Icon(Icons.add, color: Colors.white, size: 28),
-        ),
+        child: Icon(Icons.add, size: s(context, 28)),
       ),
 
-      backgroundColor: const Color(0xFFFFFFFF),
-
+      /// 📦 Body
       body: BlocConsumer<ProductsCubit, ProductsState>(
         listener: (context, state) {
           if (state.deleteSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Textapp("Product deleted successfully")),
+              const SnackBar(content: Text('Deleted successfully')),
             );
           }
-
-          if (state.error != null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Textapp(state.error!)));
-          }
         },
-
         builder: (context, state) {
           return ModalProgressHUD(
-            blur: 0.5,
             inAsyncCall: state.isLoading || state.isDeleting,
-            child: const Productscreenbody(),
+            child: Productscreenbody(
+              onpressed: (int productId) {
+                showDialog(
+                  context: context,
+                  barrierColor: Colors.black.withOpacity(0.4),
+                  builder: (_) => DeleteDialog(productId: productId),
+                );
+              },
+            ),
           );
         },
+      ),
+
+      bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  Widget _buildBottomNav() {
+    final s = AppSizes.s;
+
+    final items = [
+      [_AppIcons.home, 'Home'],
+      [_AppIcons.product, 'Products'],
+      [_AppIcons.sales, 'Sales'],
+      [_AppIcons.expenses, 'Expenses'],
+      [_AppIcons.chart, 'Reports'],
+    ];
+
+    return Container(
+      padding: EdgeInsets.all(s(context, 12)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(items.length, (i) {
+          final isActive = i == _activeIndex;
+          final color =
+              isActive ? AppColors.orange : AppColors.textSecondary;
+
+          return GestureDetector(
+            onTap: () => _navigateTo(i),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(items[i][0],
+                    width: s(context, 24), color: color),
+                if (isActive)
+                  Text(items[i][1], style: TextStyle(color: color)),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
 }
 
+/// ✅ Categories
 void showCategoriesPopup(BuildContext context) {
   final cubit = context.read<ProductsCubit>();
   final categories = cubit.state.categories;
 
   showDialog(
     context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text("Categories"),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              final category = categories[index];
-
-              return ListTile(
-                leading: const Icon(Icons.category),
-
-                /// اختيار الكاتيجوري
-                title: Text(category),
-                onTap: () {
-                  cubit.filterByCategory(category);
-                  Navigator.pop(context);
-                },
-
-                /// ازرار التعديل و الحذف
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    /// edit
-                    IconButton(
-                      icon: const Icon(Icons.edit, size: 20),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        showEditCategoryDialog(context, category, cubit);
-                      },
-                    ),
-
-                    /// delete
-                    IconButton(
-                      icon: const Icon(Icons.delete, size: 20),
-                      onPressed: () {
-                        cubit.deleteCategory(category);
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      );
-    },
-  );
-}
-
-void showEditCategoryDialog(
-  BuildContext context,
-  String oldCategory,
-  ProductsCubit cubit,
-) {
-  final controller = TextEditingController(text: oldCategory);
-
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Textapp("Edit Category" , fontWeight: FontWeight.bold,),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-                      hintText: "Enter new category name",
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        borderSide: BorderSide(color: Colors.black),
-                      ),
-                    ),
-        ),
-        actions: [
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: const Color.fromARGB(255, 0, 0, 0),
-              
-            ),
-            child: const Textapp("Cancel", fontsize: 12,fontWeight: FontWeight.w500,),
-            onPressed: () => Navigator.pop(context),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              
-              backgroundColor: Color(0xFFF54500),
-            ),
-            child: const Textapp(
-              "Save", 
-              fontsize: 12,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,),
-            onPressed: () {
-              cubit.updateCategory(oldCategory, controller.text);
+    builder: (_) => AlertDialog(
+      title: const Text('Categories'),
+      content: ListView.builder(
+        shrinkWrap: true,
+        itemCount: categories.length,
+        itemBuilder: (_, i) {
+          final category = categories[i];
+          return ListTile(
+            title: Text(category),
+            onTap: () {
+              cubit.filterByCategory(category);
               Navigator.pop(context);
             },
-          ),
-        ],
-      );
-    },
+          );
+        },
+      ),
+    ),
   );
 }

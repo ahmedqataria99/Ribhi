@@ -5,6 +5,8 @@ abstract class ExpenseRepository {
 
   Future<void> delete(int id);
 
+  Future<void> update(Expense expense);
+
   Future<List<Expense>> getAll();
 
   Future<List<Expense>> getByDate(DateTime date);

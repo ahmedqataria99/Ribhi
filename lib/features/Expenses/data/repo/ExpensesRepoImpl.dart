@@ -3,6 +3,7 @@ import 'package:ribhi/features/Expenses/data/models/ExpensesModel.dart';
 import 'package:ribhi/features/Expenses/domain/entity/Expenses.dart';
 import 'package:ribhi/features/Expenses/domain/repo/ExpensesRepo.dart';
 
+
 class ExpenseRepositoryImpl implements ExpenseRepository {
   final ExpenseLocalDataSource local;
 
@@ -17,6 +18,12 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   @override
   Future<void> delete(int id) async {
     await local.delete(id);
+  }
+
+  @override
+  Future<void> update(Expense expense) async {
+    final model = ExpenseModel.fromEntity(expense);
+    await local.update(model);
   }
 
   @override

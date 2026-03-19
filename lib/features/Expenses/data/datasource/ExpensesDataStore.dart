@@ -4,6 +4,7 @@ import 'package:ribhi/features/Expenses/data/models/ExpensesModel.dart';
 abstract class ExpenseLocalDataSource {
   Future<void> insert(ExpenseModel model);
   Future<void> delete(int id);
+  Future<void> update(ExpenseModel model);
   Future<List<ExpenseModel>> getAll();
   Future<List<ExpenseModel>> getByDate(DateTime date);
 }
@@ -26,6 +27,16 @@ class ExpenseLocalDataSourceImpl
       'expenses',
       where: 'id = ?',
       whereArgs: [id],
+    );
+  }
+
+  @override
+  Future<void> update(ExpenseModel model) async {
+    await db.update(
+      'expenses',
+      model.toMap(),
+      where: 'id = ?',
+      whereArgs: [model.id],
     );
   }
 

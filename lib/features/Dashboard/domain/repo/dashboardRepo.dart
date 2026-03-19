@@ -1,6 +1,5 @@
-import 'package:ribhi/features/Dashboard/domain/entity/DashboardSammary.dart';
-
+import 'package:ribhi/features/Dashboard/domain/entity/DashboardStats.dart';
 
 abstract class DashboardRepository {
-  Future<DashboardSummary> getSummary();
+  Future<DashboardStats> getStats();
 }

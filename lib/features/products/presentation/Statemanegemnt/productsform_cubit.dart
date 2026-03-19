@@ -193,7 +193,7 @@ class ProductFormCubit extends Cubit<ProductFormState> {
         quantity: int.parse(state.quantity),
         category: (state.category ?? "Other").trim(),
         categoryType: state.categoryType,
-        minStockLevel: 1,
+        minStockLevel: state.alarmLimit.isEmpty ? 0 : int.parse(state.alarmLimit),
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
@@ -229,7 +229,7 @@ class ProductFormCubit extends Cubit<ProductFormState> {
         quantity: int.parse(state.quantity),
         category: (state.category ?? "Other").trim(),
         categoryType: state.categoryType,
-        minStockLevel: 1,
+        minStockLevel: state.alarmLimit.isEmpty ? 0 : int.parse(state.alarmLimit),
         createdAt: state.createdAt ?? DateTime.now(),
         updatedAt: DateTime.now(),
       );

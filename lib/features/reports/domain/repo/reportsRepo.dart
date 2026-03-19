@@ -1,8 +1,7 @@
 import 'package:ribhi/features/reports/domain/entity/reports.dart';
 
 abstract class ReportsRepository {
-  Future<ReportSummary> generateReport({
-    required DateTime from,
-    required DateTime to,
-  });
+  Future<DailyReport>     getDailyReport(DateTime date);
+  Future<MonthlyReport>   getMonthlyReport(DateTime month);
+  Future<InventoryReport> getInventoryReport();
 }

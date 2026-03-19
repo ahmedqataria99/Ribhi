@@ -6,7 +6,8 @@ abstract class SaleRepository {
     required int quantity,
   });
 
+  
   Future<List<Sale>> getAll();
-
+  
   Future<List<Sale>> getTodaySales();
 }

@@ -9,7 +9,8 @@ import '../../Statemanegemnt/products_cubit.dart';
 import '../../Statemanegemnt/products_state.dart';
 
 class Productscreenbody extends StatelessWidget {
-  const Productscreenbody({super.key});
+  final void Function(int) onpressed;
+  const Productscreenbody({super.key, required this.onpressed});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,9 @@ class Productscreenbody extends StatelessWidget {
                   itemCount: products.length,
                   itemBuilder: (context, index) {
                     final product = products[index];
-                    return ProductCard(product: product);
+                    return ProductCard(
+                      product: product,
+                      onpressed: onpressed,);
                   },
                 );
               },

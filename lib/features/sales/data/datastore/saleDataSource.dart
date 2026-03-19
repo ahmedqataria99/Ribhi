@@ -2,6 +2,8 @@ import 'package:ribhi/core/database/Appdatabase.dart';
 import 'package:ribhi/features/sales/data/model/SaleModel.dart';
 
 abstract class SaleLocalDataSource {
+  SaleLocalDataSource(AppDatabase db);
+
   Future<void> insert(SaleModel model);
   Future<List<SaleModel>> getAll();
   Future<List<SaleModel>> getToday();
