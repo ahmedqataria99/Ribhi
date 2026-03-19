@@ -443,7 +443,7 @@ class _SalesView extends StatelessWidget {
                     Image.asset(items[i][0], width: s(context,24), height: s(context,24), color: color),
                     if (isActive) ...[
                       SizedBox(height: s(context, 2)),
-                      Text(items[i][1] as String,
+                      Text(items[i][1],
                           style: TextStyle(fontSize: s(context,11), color: color)),
                     ],
                   ],
