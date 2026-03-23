@@ -45,8 +45,6 @@ class DatabaseHelper implements AppDatabase {
           );
         }
         if (oldVersion < 4) {
-          // ✅ المنتجات القديمة كان min_stock_level = 1 hardcoded
-          // نحدثها تلقائياً: الـ limit = 20% من الـ quantity (minimum 1)
           await db.execute('''
             UPDATE products
             SET min_stock_level = MAX(1, ROUND(quantity * 0.2))
@@ -100,11 +98,14 @@ class DatabaseHelper implements AppDatabase {
     return db.delete(table, where: where, whereArgs: whereArgs);
   }
 
+  // 🔥 أهم جزء
   @override
-  Future<T> transaction<T>(Future<T> Function() action) async {
+  Future<T> transaction<T>(Future<T> Function(AppDatabase txn) action) async {
     final db = await _db;
+
     return db.transaction((txn) async {
-      return await action();
+      final transactionDb = _TransactionDatabase(txn);
+      return await action(transactionDb);
     });
   }
 
@@ -115,4 +116,65 @@ class DatabaseHelper implements AppDatabase {
       _database = null;
     }
   }
+}
+class _TransactionDatabase implements AppDatabase {
+  final Transaction txn;
+
+  _TransactionDatabase(this.txn);
+
+  @override
+  Future<List<Map<String, dynamic>>> query(
+    String table, {
+    String? where,
+    List<Object?>? whereArgs,
+    String? orderBy,
+  }) async {
+    return txn.query(
+      table,
+      where: where,
+      whereArgs: whereArgs,
+      orderBy: orderBy,
+    );
+  }
+
+  @override
+  Future<int> insert(String table, Map<String, dynamic> values) async {
+    return txn.insert(table, values);
+  }
+
+  @override
+  Future<int> update(
+    String table,
+    Map<String, dynamic> values, {
+    String? where,
+    List<Object?>? whereArgs,
+  }) async {
+    return txn.update(
+      table,
+      values,
+      where: where,
+      whereArgs: whereArgs,
+    );
+  }
+
+  @override
+  Future<int> delete(
+    String table, {
+    String? where,
+    List<Object?>? whereArgs,
+  }) async {
+    return txn.delete(
+      table,
+      where: where,
+      whereArgs: whereArgs,
+    );
+  }
+
+  @override
+  Future<T> transaction<T>(Future<T> Function(AppDatabase txn) action) {
+    throw UnsupportedError("Nested transactions not supported");
+  }
+
+  @override
+  Future<void> close() async {}
 }

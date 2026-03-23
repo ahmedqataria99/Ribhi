@@ -17,7 +17,7 @@ class CategoryFilterBar extends StatelessWidget {
         final allCategories = ["All", ...categories];
 
         return SizedBox(
-          height: 40,
+          height: 35,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: allCategories.length,
@@ -47,7 +47,7 @@ class CategoryFilterBar extends StatelessWidget {
 
                   padding: const EdgeInsets.symmetric(
                     horizontal: 18,
-                    vertical: 8,
+                    // vertical: 3,
                   ),
 
                   decoration: BoxDecoration(
@@ -55,7 +55,7 @@ class CategoryFilterBar extends StatelessWidget {
                         ? const Color(0xFFF54500)
                         : const Color(0xFFD6D4D4),
 
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                   ),
 
                   child: Center(

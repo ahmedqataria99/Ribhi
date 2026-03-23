@@ -1,13 +1,14 @@
+import 'package:ribhi/core/database/Appdatabase.dart';
 import 'package:ribhi/features/products/domain/entities/products.dart';
 
 abstract class ProductRepository {
-  Future<Product?> getById(int id);
+  Future<Product?> getById(int id, [AppDatabase? txn]);
 
   Future<List<Product>> getAll();
 
   Future<void> add(Product product);
 
-  Future<void> update(Product product);
+  Future<void> update(Product product, [AppDatabase? txn]);
 
   Future<void> delete(int id);
 

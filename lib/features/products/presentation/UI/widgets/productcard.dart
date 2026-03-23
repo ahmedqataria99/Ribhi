@@ -16,19 +16,19 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: AppColors.cardBorder,
-      margin: const EdgeInsets.symmetric(vertical: 6),
+      margin: const EdgeInsets.symmetric(vertical: 4),
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: ListTile(
         title: Textapp(
           product.name,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
           fontsize: 16,
         ),
         subtitle: Textapp(
           'Price: ${product.sellPrice} | Qty: ${product.quantity} ${product.categoryType ?? ''}',
           color: AppColors.textPrimary,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w300,
           fontsize: 12,
         ),
         trailing: Row(

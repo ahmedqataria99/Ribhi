@@ -24,9 +24,8 @@ class SaleRepositoryImpl implements SaleRepository {
     required int quantity,
   }) async {
 
-    await db.transaction(() async {
-
-      final productModel = await productLocal.getById(productId);
+    await db.transaction((txn) async {
+      final productModel = await productLocal.getById(productId, txn);
 
       if (productModel == null) {
         throw AppException("Product not found");
@@ -41,8 +40,7 @@ class SaleRepositoryImpl implements SaleRepository {
 
       final newQuantity = product.quantity - quantity;
 
-      final profit =
-          (product.sellPrice - product.costPrice) * quantity;
+      final profit = (product.sellPrice - product.costPrice) * quantity;
 
       final amount = product.sellPrice * quantity;
 
@@ -54,6 +52,7 @@ class SaleRepositoryImpl implements SaleRepository {
       /// تحويل Entity → Model قبل update
       await productLocal.update(
         ProductModel.fromEntity(updatedProduct),
+        txn,
       );
 
       final sale = SaleModel(
@@ -66,7 +65,7 @@ class SaleRepositoryImpl implements SaleRepository {
         createdAt: DateTime.now(),
       );
 
-      await saleLocal.insert(sale);
+      await saleLocal.insert(sale, txn);
     });
   }
 

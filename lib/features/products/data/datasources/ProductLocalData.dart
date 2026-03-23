@@ -2,29 +2,28 @@ import 'package:ribhi/core/database/Appdatabase.dart';
 import 'package:ribhi/features/products/data/model/ProductModel.dart';
 
 abstract class ProductLocalDataSource {
-  Future<ProductModel?> getById(int id);
+  Future<ProductModel?> getById(int id, [AppDatabase? txn]);
 
   Future<List<ProductModel>> getAll();
 
-  Future<void> insert(ProductModel model);
+  Future<void> insert(ProductModel model, [AppDatabase? txn]);
 
-  Future<void> update(ProductModel model);
+  Future<void> update(ProductModel model, [AppDatabase? txn]);
 
-  Future<void> delete(int id);
-
+  Future<void> delete(int id, [AppDatabase? txn]);
   Future<List<ProductModel>> search(String keyword);
 
-  Future<List<ProductModel>> filterByCategory(String category);
+Future<List<ProductModel>> filterByCategory(String category);
 
-  Future<List<ProductModel>> getLowStock();
+Future<List<ProductModel>> getLowStock();
 
-  Future<void> addCategory({required String name, required String type});
+Future<void> addCategory({required String name, required String type});
 
-  Future<List<String>> getCategories();
+Future<List<String>> getCategories();
 
-  Future<void> updateCategory(String oldName, String newName);
+Future<void> deleteCategory(String category);
 
-  Future<void> deleteCategory(String category); 
+Future<void> updateCategory(String oldName, String newName);
 }
 
 class ProductLocalDataSourceImpl implements ProductLocalDataSource {
@@ -32,34 +31,54 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
 
   ProductLocalDataSourceImpl(this.db);
 
-  // 🔹 Get product by ID
+  // 🔹 Get by ID (supports transaction)
   @override
-  Future<ProductModel?> getById(int id) async {
-    final result = await db.query('products', where: 'id = ?', whereArgs: [id]);
+  Future<ProductModel?> getById(int id, [AppDatabase? txn]) async {
+    final database = txn ?? db;
+
+    final result = await database.query(
+      'products',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
 
     if (result.isEmpty) return null;
 
     return ProductModel.fromMap(result.first);
   }
 
-  // 🔹 Get all products
+  // 🔹 Get all
   @override
   Future<List<ProductModel>> getAll() async {
-    final result = await db.query('products', orderBy: 'created_at DESC');
+    final result = await db.query(
+      'products',
+      orderBy: 'created_at DESC',
+    );
 
     return result.map(ProductModel.fromMap).toList();
   }
 
-  // 🔹 Insert product
+  // 🔹 Insert
   @override
-  Future<void> insert(ProductModel model) async {
-    await db.insert('products', model.toMap());
+  Future<void> insert(ProductModel model, [AppDatabase? txn]) async {
+    final database = txn ?? db;
+
+    await database.insert(
+      'products',
+      model.toMap(),
+    );
   }
 
-  // 🔹 Update product
+  // 🔹 Update
   @override
-  Future<void> update(ProductModel model) async {
-    await db.update(
+  Future<void> update(ProductModel model, [AppDatabase? txn]) async {
+    final database = txn ?? db;
+
+    if (model.id == null) {
+      throw Exception("Product ID is null, cannot update");
+    }
+
+    await database.update(
       'products',
       model.toMap(),
       where: 'id = ?',
@@ -67,13 +86,21 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
     );
   }
 
-  // 🔹 Delete product
+  // 🔹 Delete
   @override
-  Future<void> delete(int id) async {
-    await db.delete('products', where: 'id = ?', whereArgs: [id]);
+  Future<void> delete(int id, [AppDatabase? txn]) async {
+    final database = txn ?? db;
+
+    await database.delete(
+      'products',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
-  // 🔹 Search by name
+  // 🔥👇 دول اللي كانوا ناقصين 👇🔥
+
+  // 🔹 Search
   @override
   Future<List<ProductModel>> search(String keyword) async {
     final result = await db.query(
@@ -97,7 +124,7 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
     return result.map(ProductModel.fromMap).toList();
   }
 
-  // 🔹 Get low stock products
+  // 🔹 Low stock
   @override
   Future<List<ProductModel>> getLowStock() async {
     final result = await db.query(
@@ -108,55 +135,51 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
     return result.map(ProductModel.fromMap).toList();
   }
 
+  // 🔹 Add category
   @override
-  Future<void> addCategory({required String name, required String type}) async {
-    try {
-      await db.insert('categories', {
-        'name': name.trim(),
-        'type': type.toLowerCase(),
-        'created_at': DateTime.now().toIso8601String(),
-      });
-    } catch (e) {
-      print('Error adding category: $e');
-      rethrow;
-    }
+  Future<void> addCategory({
+    required String name,
+    required String type,
+  }) async {
+    await db.insert('categories', {
+      'name': name.trim(),
+      'type': type.toLowerCase(),
+      'created_at': DateTime.now().toIso8601String(),
+    });
   }
 
+  // 🔹 Get categories
   @override
   Future<List<String>> getCategories() async {
-    try {
-      final result = await db.query('categories');
-      return result.map((e) => (e['name'] ?? '').toString()).toList();
-    } catch (e) {
-      print('Error getting categories: $e');
-      return [];
-    }
+    final result = await db.query('categories');
+
+    return result.map((e) => (e['name'] ?? '').toString()).toList();
   }
 
+  // 🔹 Delete category
   @override
   Future<void> deleteCategory(String category) async {
-    try {
-      await db.delete('categories', where: 'name = ?', whereArgs: [category]);
+    await db.delete(
+      'categories',
+      where: 'name = ?',
+      whereArgs: [category],
+    );
 
-      await db.delete('products', where: 'category = ?', whereArgs: [category]);
-    } catch (e) {
-      print('Error deleting category: $e');
-      rethrow;
-    }
+    await db.delete(
+      'products',
+      where: 'category = ?',
+      whereArgs: [category],
+    );
   }
 
+  // 🔹 Update category
   @override
   Future<void> updateCategory(String oldName, String newName) async {
-    try {
-      await db.update(
-        'categories',
-        {'name': newName},
-        where: 'name = ?',
-        whereArgs: [oldName],
-      );
-    } catch (e) {
-      print('Error updating category: $e');
-      rethrow;
-    }
+    await db.update(
+      'categories',
+      {'name': newName},
+      where: 'name = ?',
+      whereArgs: [oldName],
+    );
   }
 }

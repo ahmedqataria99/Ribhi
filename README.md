@@ -8,6 +8,7 @@
 
 | Feature | Description |
 |---|---|
+| 🔐 **Authentication** | Secure Login, Sign Up, and Email Verification powered by Firebase |
 | 📊 **Dashboard** | Overview of key stats: total revenue, profit, expenses, and low-stock alerts |
 | 📦 **Products** | Add, edit, delete products with cost/sell prices, categories, and stock levels |
 | 🧾 **Sales** | Record product sales and automatically track profits |
@@ -21,11 +22,12 @@
 ## 🛠️ Tech Stack
 
 - **Framework**: [Flutter](https://flutter.dev/) (Dart)
+- **Authentication**: [Firebase Auth](https://firebase.google.com/docs/auth)
 - **State Management**: [flutter_bloc](https://pub.dev/packages/flutter_bloc) — BLoC / Cubit pattern
 - **Database**: [sqflite](https://pub.dev/packages/sqflite) + [sqflite_common_ffi](https://pub.dev/packages/sqflite_common_ffi_web) (Desktop/Web support)
 - **Charts**: [fl_chart](https://pub.dev/packages/fl_chart)
-- **Fonts**: [google_fonts](https://pub.dev/packages/google_fonts)
-- **Icons**: [flutter_svg](https://pub.dev/packages/flutter_svg)
+- **Functional Programming**: [dartz](https://pub.dev/packages/dartz) (Either/Option types)
+- **Persistence**: [shared_preferences](https://pub.dev/packages/shared_preferences)
 - **Architecture**: Clean Architecture (Data → Domain → Presentation layers)
 
 ---
@@ -63,8 +65,8 @@ The app uses a local SQLite database (`origo_store.db`) with the following table
 │ updated_at   │   │ id PK            │     │ id PK                    │
 └──────────────┘   │ product_id FK ───┘     │ product_id FK ───────────┘
                    │ quantity         │     │ system_quantity           │
-                   │ sell_price_snap  │     │ actual_quantity           │
-                   │ cost_price_snap  │     │ difference                │
+                   │ sell_price_snapshot    │ actual_quantity           │
+                   │ cost_price_snapshot    │ difference                │
                    │ profit           │     │ date                      │
                    │ amount           │     └──────────────────────────┘
                    │ created_at       │
@@ -106,6 +108,7 @@ products ──< inventory_adjustments  (one-to-many, CASCADE DELETE)
 ```
 lib/
 ├── main.dart                         # App entry point, DI setup
+├── firebase_options.dart             # Firebase configuration
 ├── core/
 │   ├── AppColor/                     # App color constants
 │   ├── constant/                     # Shared constants
@@ -123,6 +126,7 @@ lib/
     ├── Expenses/                     # Expense tracking
     ├── reports/                      # Financial reports & charts
     ├── Inventory/                    # Inventory adjustment
+    ├── auth/                         # Firebase authentication flow
     └── Initialization/               # First-run store setup
 ```
 
@@ -187,6 +191,9 @@ flutter_bloc: ^8.1.3       # State management
 sqflite: ^2.4.2            # Local SQLite database
 sqflite_common_ffi_web: ^0.4.5+1  # Desktop/Web SQLite
 fl_chart: ^0.66.0          # Charts and graphs
+firebase_auth: ^6.2.0      # Firebase Authentication
+dartz: ^0.10.1             # Functional programming
+shared_preferences: ^2.3.2  # Local preferences
 google_fonts: ^6.1.0       # Typography
 flutter_svg: ^2.0.10+1     # SVG icon support
 gap: ^3.0.1                # Spacing utility

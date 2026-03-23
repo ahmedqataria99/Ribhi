@@ -4,7 +4,7 @@ import 'package:ribhi/features/sales/data/model/SaleModel.dart';
 abstract class SaleLocalDataSource {
   SaleLocalDataSource(AppDatabase db);
 
-  Future<void> insert(SaleModel model);
+  Future<void> insert(SaleModel model, [AppDatabase? txn]);
   Future<List<SaleModel>> getAll();
   Future<List<SaleModel>> getToday();
 }
@@ -15,8 +15,9 @@ class SaleLocalDataSourceImpl implements SaleLocalDataSource {
   SaleLocalDataSourceImpl(this.db);
 
   @override
-  Future<void> insert(SaleModel model) async {
-    await db.insert('sales', model.toMap());
+  Future<void> insert(SaleModel model, [AppDatabase? txn]) async {
+    final database = txn ?? db;
+    await database.insert('sales', model.toMap());
   }
 
   @override

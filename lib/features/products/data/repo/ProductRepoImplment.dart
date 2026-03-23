@@ -1,3 +1,4 @@
+import 'package:ribhi/core/database/Appdatabase.dart';
 import 'package:ribhi/features/products/data/datasources/ProductLocalData.dart';
 import 'package:ribhi/features/products/data/model/ProductModel.dart';
 import 'package:ribhi/features/products/domain/entities/products.dart';
@@ -9,8 +10,8 @@ class ProductRepositoryImpl implements ProductRepository {
   ProductRepositoryImpl(this.local);
 
   @override
-  Future<Product?> getById(int id) async {
-    final model = await local.getById(id);
+  Future<Product?> getById(int id, [AppDatabase? txn]) async {
+    final model = await local.getById(id, txn);
     return model?.toEntity();
   }
 
@@ -27,9 +28,9 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<void> update(Product product) async {
+  Future<void> update(Product product, [AppDatabase? txn]) async {
     final model = ProductModel.fromEntity(product);
-    await local.update(model);
+    await local.update(model, txn);
   }
 
   @override

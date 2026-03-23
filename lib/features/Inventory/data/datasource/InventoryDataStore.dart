@@ -2,7 +2,7 @@ import 'package:ribhi/core/database/Appdatabase.dart';
 import 'package:ribhi/features/Inventory/data/model/InventoryModel.dart';
 
 abstract class InventoryAuditLocalDataSource {
-  Future<void> insertAdjustment(InventoryAdjustmentModel model);
+  Future<void> insertAdjustment(InventoryAdjustmentModel model, [AppDatabase? txn]);
 
   Future<List<InventoryAdjustmentModel>> getAll();
 }
@@ -16,8 +16,9 @@ class InventoryAuditLocalDataSourceImpl
 
   @override
   Future<void> insertAdjustment(
-      InventoryAdjustmentModel model) async {
-    await db.insert(
+      InventoryAdjustmentModel model, [AppDatabase? txn]) async {
+    final database = txn ?? db;
+    await database.insert(
       'inventory_adjustments',
       model.toMap(),
     );

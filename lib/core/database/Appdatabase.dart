@@ -1,4 +1,3 @@
-
 abstract class AppDatabase {
   Future<List<Map<String, dynamic>>> query(
     String table, {
@@ -7,7 +6,7 @@ abstract class AppDatabase {
     String? orderBy,
   });
 
-  Future<int> insert(String table, Map<String, dynamic> values, );
+  Future<int> insert(String table, Map<String, dynamic> values);
 
   Future<int> update(
     String table,
@@ -22,7 +21,8 @@ abstract class AppDatabase {
     List<Object?>? whereArgs,
   });
 
-  Future<T> transaction<T>(Future<T> Function() action);
+  // 🔥 أهم تعديل
+  Future<T> transaction<T>(Future<T> Function(AppDatabase txn) action);
 
   Future<void> close();
 }

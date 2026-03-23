@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:ribhi/core/AppColor/appcolor.dart';
+import 'package:ribhi/core/constant/text.dart';
 import 'package:ribhi/core/theme/app_responsive.dart';
 import 'package:ribhi/features/Expenses/domain/repo/ExpensesRepo.dart';
 import 'package:ribhi/features/Expenses/presentation/cubit/expenses_cubit.dart';
@@ -26,7 +28,7 @@ class _AppIcons {
   static const chart = 'assets/photo/carbon_analytics.png';
 }
 
-/// ✅ Delete Dialog
+/// ✅ Delete product Dialog
 class DeleteDialog extends StatelessWidget {
   final int productId;
 
@@ -49,12 +51,10 @@ class DeleteDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            Textapp(
               "Are you sure you want to delete?",
-              style: TextStyle(
-                fontSize: s(context, 14),
-                fontWeight: FontWeight.w500,
-              ),
+              fontWeight: FontWeight.w500,
+              fontsize: 16,
             ),
             SizedBox(height: s(context, 16)),
             Row(
@@ -82,7 +82,91 @@ class DeleteDialog extends StatelessWidget {
                   ),
                 ),
               ],
-            )
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// ✅ Edit Category
+class EditCategoryDialog extends StatelessWidget {
+  final String oldCategory;
+
+  const EditCategoryDialog({super.key, required this.oldCategory});
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppSizes.s;
+    final TextEditingController controller = TextEditingController(
+      text: oldCategory,
+    );
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(horizontal: s(context, 24)),
+      child: Container(
+        padding: EdgeInsets.all(s(context, 16)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(s(context, 12)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            /// 📝 Title
+            Textapp("Edit Category", fontWeight: FontWeight.w600, fontsize: 16),
+
+            SizedBox(height: s(context, 16)),
+
+            /// ✏️ Input
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                hintText: "Enter new category name",
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            SizedBox(height: s(context, 16)),
+
+            /// Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Cancel"),
+                  ),
+                ),
+                SizedBox(width: s(context, 8)),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final newName = controller.text.trim();
+
+                      if (newName.isNotEmpty && newName != oldCategory) {
+                        context.read<ProductsCubit>().updateCategory(
+                          oldCategory,
+                          newName,
+                        );
+                      }
+
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.green,
+                    ),
+                    child: const Text(
+                      "Save",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -91,25 +175,92 @@ class DeleteDialog extends StatelessWidget {
 }
 
 /// ✅ Animation Route
+/// delete category
+class DeleteCategoryDialog extends StatelessWidget {
+  final String category;
+
+  const DeleteCategoryDialog({super.key, required this.category});
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppSizes.s;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(horizontal: s(context, 24)),
+      child: Container(
+        padding: EdgeInsets.all(s(context, 16)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(s(context, 12)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            /// 📝 Text
+            Textapp(
+              "Are you sure you want to delete '$category'?",
+              fontWeight: FontWeight.w500,
+              fontsize: 16,
+            ),
+
+            SizedBox(height: s(context, 16)),
+
+            /// Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Cancel"),
+                  ),
+                ),
+                SizedBox(width: s(context, 8)),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+
+                      context.read<ProductsCubit>().deleteCategory(category);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.red,
+                    ),
+                    child: const Text(
+                      "Delete",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _NavRoute extends PageRouteBuilder {
   _NavRoute({required Widget page})
-      : super(
-          pageBuilder: (_, __, ___) => page,
-          transitionsBuilder: (_, anim, __, child) {
-            final curved = CurvedAnimation(
-              parent: anim,
-              curve: Curves.easeOutCubic,
-              reverseCurve: Curves.easeInCubic,
-            );
-            return SlideTransition(
-              position: Tween(
-                begin: const Offset(0, 0.06),
-                end: Offset.zero,
-              ).animate(curved),
-              child: FadeTransition(opacity: curved, child: child),
-            );
-          },
-        );
+    : super(
+        pageBuilder: (_, __, ___) => page,
+        transitionsBuilder: (_, anim, __, child) {
+          final curved = CurvedAnimation(
+            parent: anim,
+            curve: Curves.easeOutCubic,
+            reverseCurve: Curves.easeInCubic,
+          );
+          return SlideTransition(
+            position: Tween(
+              begin: const Offset(0, 0.06),
+              end: Offset.zero,
+            ).animate(curved),
+            child: FadeTransition(opacity: curved, child: child),
+          );
+        },
+      );
 }
 
 /// ✅ Main Screen
@@ -165,9 +316,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
         context,
         _NavRoute(
           page: BlocProvider(
-            create: (_) => ExpensesCubit(
-              repository: widget.expensesRepository,
-            )..loadExpenses(),
+            create: (_) =>
+                ExpensesCubit(repository: widget.expensesRepository)
+                  ..loadExpenses(),
             child: ExpensesScreen(
               expensesRepository: widget.expensesRepository,
               reportsRepository: widget.reportsRepository,
@@ -183,8 +334,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         context,
         _NavRoute(
           page: BlocProvider(
-            create: (_) =>
-                ReportsCubit(repository: widget.reportsRepository),
+            create: (_) => ReportsCubit(repository: widget.reportsRepository),
             child: ReportsScreen(
               reportsRepository: widget.reportsRepository,
               expensesRepository: widget.expensesRepository,
@@ -282,18 +432,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(items.length, (i) {
           final isActive = i == _activeIndex;
-          final color =
-              isActive ? AppColors.orange : AppColors.textSecondary;
+          final color = isActive ? AppColors.orange : AppColors.textSecondary;
 
           return GestureDetector(
             onTap: () => _navigateTo(i),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Image.asset(items[i][0],
-                    width: s(context, 24), color: color),
-                if (isActive)
-                  Text(items[i][1], style: TextStyle(color: color)),
+                Image.asset(items[i][0], width: s(context, 24), color: color),
+                if (isActive) Text(items[i][1], style: TextStyle(color: color)),
               ],
             ),
           );
@@ -317,8 +464,39 @@ void showCategoriesPopup(BuildContext context) {
         itemCount: categories.length,
         itemBuilder: (_, i) {
           final category = categories[i];
+
           return ListTile(
             title: Text(category),
+
+            /// 👇 actions على اليمين
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: SvgPicture.asset("assets/svg/edit.svg"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (_) => EditCategoryDialog(oldCategory: category),
+                    );
+                  },
+                ),
+
+                /// 🗑 Delete
+                IconButton(
+                  icon: SvgPicture.asset("assets/svg/delete.svg"),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => DeleteCategoryDialog(category: category),
+                    );
+                  },
+                ),
+              ],
+            ),
+
+            /// 👇 ضغط عادي = فلترة
             onTap: () {
               cubit.filterByCategory(category);
               Navigator.pop(context);

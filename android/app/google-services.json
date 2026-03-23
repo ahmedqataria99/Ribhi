@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "168285576529",
+    "project_id": "origo-ribhi",
+    "storage_bucket": "origo-ribhi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168285576529:android:fc544d3336175850a04770",
+        "android_client_info": {
+          "package_name": "com.example.ribhi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr3SfuCFxSPLVFXlMxx5sG85V_1sNVCNc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -10,6 +10,9 @@ import 'package:ribhi/features/Dashboard/presentation/ui/widgets/weekly_profit_c
 import 'package:ribhi/features/Expenses/domain/repo/ExpensesRepo.dart';
 import 'package:ribhi/features/Expenses/presentation/cubit/expenses_cubit.dart';
 import 'package:ribhi/features/Expenses/presentation/ui/screens/ExpensesScreen.dart';
+import 'package:ribhi/features/Initialization/data/datasource/SettingLocalData.dart';
+import 'package:ribhi/features/auth/data/datasource/auth_local_service.dart';
+import 'package:ribhi/features/auth/presentation/screens/sign_in_screen.dart';
 import 'package:ribhi/features/products/data/datasources/ProductLocalData.dart';
 import 'package:ribhi/features/products/data/repo/ProductRepoImplment.dart';
 import 'package:ribhi/features/products/presentation/UI/screens/ProductsScreen.dart';
@@ -52,6 +55,7 @@ class DashboardScreen extends StatefulWidget {
   final ProductRepositoryImpl      productsRepository;
   final SaleRepositoryImpl         saleRepository;
   final ProductLocalDataSourceImpl productLocalDataSource;
+  final SettingsLocalDataSource?   settingsDataSource;
 
   const DashboardScreen({
     super.key,
@@ -60,6 +64,7 @@ class DashboardScreen extends StatefulWidget {
     required this.productsRepository,
     required this.saleRepository,
     required this.productLocalDataSource,
+    this.settingsDataSource,
   });
 
   @override
@@ -73,6 +78,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     context.read<DashboardCubit>().loadStats();
+  }
+
+  Future<void> _logout() async {
+    await AuthLocalService().logout();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => SignInScreen(
+          storeName:        '',
+          startingCapital:  0,
+          selectedCurrency: 'EGP',
+          expensesRepository:     widget.expensesRepository,
+          reportsRepository:      widget.reportsRepository,
+          productsRepository:     widget.productsRepository,
+          saleRepository:         widget.saleRepository,
+          productLocalDataSource: widget.productLocalDataSource,
+        ),
+      ),
+      (route) => false,
+    );
   }
 
   @override
@@ -89,6 +114,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _logout,
+        backgroundColor: const Color(0xFFFF4D00),
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.logout),
+        label: const Text('Logout'),
+        heroTag: 'logout_fab',
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: _buildBottomNav(),
     );
   }

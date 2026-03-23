@@ -29,10 +29,8 @@ class InventoryAuditRepositoryImpl
       throw AppException("Quantity cannot be negative");
     }
 
-    await db.transaction(() async {
-
-      final product =
-          await productRepository.getById(productId);
+    await db.transaction((txn) async {
+      final product = await productRepository.getById(productId, txn);
 
       if (product == null) {
         throw AppException("Product not found");
@@ -48,7 +46,7 @@ class InventoryAuditRepositoryImpl
         updatedAt: DateTime.now(),
       );
 
-      await productRepository.update(updatedProduct);
+      await productRepository.update(updatedProduct, txn);
 
       // تسجيل عملية الجرد
       final adjustment = InventoryAdjustmentModel(
@@ -59,7 +57,7 @@ class InventoryAuditRepositoryImpl
         date: DateTime.now(),
       );
 
-      await local.insertAdjustment(adjustment);
+      await local.insertAdjustment(adjustment, txn);
     });
   }
 

@@ -180,31 +180,38 @@ class _SalesView extends StatelessWidget {
               ],
             ),
             body: Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSizes.hPad(context)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ── Today's summary card ──
-                  _buildSalesCard(context, state),
+            padding: EdgeInsets.symmetric(horizontal: AppSizes.hPad(context)),
+            child: Column(
+              children: [
+                Expanded( // 🔥 أهم سطر
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSalesCard(context, state),
 
-                  Padding(
-                    padding: EdgeInsets.only(top: s(context, 24), bottom: s(context, 8)),
-                    child: Text(
-                      'Select Product',
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: s(context, 13)),
+                        Padding(
+                          padding: EdgeInsets.only(top: s(context, 24), bottom: s(context, 8)),
+                          child: Text('Select Product'),
+                        ),
+
+                        _buildSearchField(context, state),
+
+                        if (state.uiState == 1)
+                          _buildDropdownList(context, state, cubit),
+
+                        if (state.uiState == 2)
+                          _buildProductDetailsCard(context, state, cubit),
+                      ],
                     ),
                   ),
+                ),
 
-                  _buildSearchField(context, state),
-
-                  if (state.uiState == 1) _buildDropdownList(context, state, cubit),
-                  if (state.uiState == 2) _buildProductDetailsCard(context, state, cubit),
-
-                  const Spacer(),
-                  _buildConfirmButton(context, state, cubit),
-                ],
-              ),
+                // 👇 الزرار ثابت تحت
+                _buildConfirmButton(context, state, cubit),
+              ],
             ),
+          ),
             bottomNavigationBar: _buildBottomNav(context),
           );
         },

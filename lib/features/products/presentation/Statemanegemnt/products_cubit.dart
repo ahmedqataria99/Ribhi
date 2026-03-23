@@ -109,14 +109,12 @@ class ProductsCubit extends Cubit<ProductsState> {
   loadProducts(); // يعيد تحميل المنتجات و الكاتيجوري
 }
 
-void updateCategory(String oldName, String newName) {
-  final updated = state.categories.map((c) {
-    if (c == oldName) {
-      return newName;
-    }
-    return c;
-  }).toList();
+Future<void> updateCategory(String oldName, String newName) async {
+  try {
+    await repository.updateCategory(oldName, newName);
 
-  emit(state.copyWith(categories: updated));
-}
-}
+    await loadProducts(); // refresh
+  } catch (e) {
+    emit(state.copyWith(error: e.toString()));
+  }
+}}
