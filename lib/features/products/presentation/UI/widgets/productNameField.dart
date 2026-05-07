@@ -2,26 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ribhi/core/constant/text.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
 import 'package:ribhi/features/products/presentation/Statemanegemnt/productsform_cubit.dart';
 import 'package:ribhi/features/products/presentation/Statemanegemnt/productsform_state.dart';
 
 class ProductNameField extends StatelessWidget {
   final bool isEdit;
 
-  const ProductNameField({
-    super.key,
-    required this.isEdit,
-  });
+  const ProductNameField({super.key, required this.isEdit});
 
   @override
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
     return BlocBuilder<ProductFormCubit, ProductFormState>(
       builder: (context, state) {
-
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             const Textapp(
               "Product name",
               fontsize: 16,
@@ -29,7 +26,7 @@ class ProductNameField extends StatelessWidget {
               color: Colors.black,
             ),
 
-            const SizedBox(height: 4),
+            SizedBox(height: s(context, 4)),
 
             TextFormField(
               initialValue: isEdit ? state.name : '',
@@ -44,14 +41,18 @@ class ProductNameField extends StatelessWidget {
                 FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9 ]')),
               ],
 
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(s(context, 8)),
+                  ),
+                  borderSide: const BorderSide(color: Colors.grey),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  borderSide: BorderSide(color: Colors.black),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(s(context, 8)),
+                  ),
+                  borderSide: const BorderSide(color: Colors.black),
                 ),
               ),
             ),

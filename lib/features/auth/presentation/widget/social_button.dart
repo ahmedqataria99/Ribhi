@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
 
 class SocialButton extends StatelessWidget {
   final String text;
@@ -16,19 +17,21 @@ class SocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
     return SizedBox(
       width: double.infinity,
-      height: 42,
+      height: s(context, 42),
       child: ElevatedButton.icon(
         onPressed: onPressed,
         icon: imagePath != null
-            ? Image.asset(imagePath!, height: 24)
-            : Icon(iconData, color: Colors.blue, size: 28),
+            ? Image.asset(imagePath!, height: s(context, 24))
+            : Icon(iconData, color: Colors.blue, size: s(context, 28)),
         label: Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
+            fontSize: s(context, 14),
           ),
         ),
         style: ElevatedButton.styleFrom(

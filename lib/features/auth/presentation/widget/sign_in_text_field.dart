@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -20,13 +21,14 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
     return TextField(
       controller: controller,
       obscureText: isObscure,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: Colors.white, fontSize: s(context, 16)),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.white70),
+        hintStyle: TextStyle(color: Colors.white70, fontSize: s(context, 14)),
         prefixIcon: Icon(prefixIcon, color: Colors.white),
         suffixIcon: suffixIcon != null
             ? IconButton(
@@ -36,10 +38,12 @@ class CustomTextField extends StatelessWidget {
             : null,
         filled: false,
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(s(context, 12)),
           borderSide: const BorderSide(color: Color(0xFF7E7E7E), width: 2),
         ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(s(context, 12)),
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
 
 class Productappbar extends StatelessWidget implements PreferredSizeWidget {
   final bool isEdit;
@@ -9,23 +10,23 @@ class Productappbar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(s(context, 16.0)),
       child: Row(
         children: [
           Text(
             isEdit ? "Edit product" : "Add a new product",
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: s(context, 18),
               fontWeight: FontWeight.bold,
             ),
           ),
-          Spacer(),
+          const Spacer(),
           IconButton(
             onPressed: () => Navigator.pop(context),
             icon: const Icon(Icons.close),
           ),
-          
         ],
       ),
     );

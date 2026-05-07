@@ -1,6 +1,7 @@
 // File: sign_in_form_container.dart
 import 'package:flutter/material.dart';
 import 'package:ribhi/core/constant/text.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
 import 'custom_text_field.dart';
 import 'social_button.dart';
 import 'or_divider.dart';
@@ -27,17 +28,16 @@ class SignInFormContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(s(context, 16)),
       width: double.infinity,
-      constraints:BoxConstraints(
+      constraints: BoxConstraints(
         minHeight: MediaQuery.of(context).size.height * 0.9,
-      ) ,
+      ),
       decoration: const BoxDecoration(
         color: Color(0xffFF4D00),
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(120),
-        ),
+        borderRadius: BorderRadius.only(topRight: Radius.circular(120)),
       ),
       child: Column(
         children: [
@@ -50,14 +50,14 @@ class SignInFormContainer extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 30),
+          SizedBox(height: s(context, 30)),
           CustomTextField(
             controller: emailController,
             hintText: "User Name",
             obscureText: false,
             prefixIcon: Icons.email,
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: s(context, 15)),
           CustomTextField(
             controller: passwordController,
             hintText: "Password",
@@ -69,45 +69,50 @@ class SignInFormContainer extends StatelessWidget {
                 color: Colors.white,
               ),
               onPressed: onPasswordVisibilityToggle,
-            )),
-          
-          
-          const SizedBox(height: 25),
+            ),
+          ),
+
+          SizedBox(height: s(context, 25)),
           ElevatedButton(
             onPressed: isLoading ? null : onSignInPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: const Color(0xffFF4D00),
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              minimumSize: const Size(double.infinity, 50),
+              padding: EdgeInsets.symmetric(vertical: s(context, 15)),
+              minimumSize: Size(double.infinity, s(context, 50)),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-              )
+              ),
             ),
             child: isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
+                ? SizedBox(
+                    width: s(context, 20),
+                    height: s(context, 20),
+                    child: const CircularProgressIndicator(
                       strokeWidth: 2.5,
                       color: Color(0xffFF4D00),
                     ),
                   )
-                : const Textapp("Sign In", color: Color(0xffFF4D00),fontsize: 16,fontWeight: FontWeight.bold,),
+                : const Textapp(
+                    "Sign In",
+                    color: Color(0xffFF4D00),
+                    fontsize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: s(context, 20)),
           const OrDivider(),
-          const SizedBox(height: 20),
+          SizedBox(height: s(context, 20)),
           ElevatedButton(
             onPressed: onCreateAccountPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: const Color(0xffFF4D00),
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              minimumSize: const Size(double.infinity, 50),
+              padding: EdgeInsets.symmetric(vertical: s(context, 15)),
+              minimumSize: Size(double.infinity, s(context, 50)),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-              )
+              ),
             ),
             child: const Textapp(
               "Create an account",
@@ -116,13 +121,13 @@ class SignInFormContainer extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: s(context, 12)),
           SocialButton(
             text: "Continue with Google",
             imagePath: "assets/photo/flat-color-icons_google.png",
             onPressed: () {},
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: s(context, 10)),
           SocialButton(
             text: "Continue with Facebook",
             iconData: Icons.facebook,

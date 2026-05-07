@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ribhi/core/AppColor/appcolor.dart';
 import 'package:ribhi/core/constant/text.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
 import 'package:ribhi/features/products/domain/entities/products.dart';
 import 'package:ribhi/features/products/presentation/Statemanegemnt/products_cubit.dart';
 import 'package:ribhi/features/products/presentation/UI/screens/productsformScreen.dart';
@@ -14,9 +15,10 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
     return Card(
       color: AppColors.cardBorder,
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: EdgeInsets.symmetric(vertical: s(context, 4)),
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: ListTile(
@@ -36,7 +38,7 @@ class ProductCard extends StatelessWidget {
           children: [
             // ── Edit ──
             IconButton(
-              iconSize: 20,
+              iconSize: s(context, 20),
               icon: const Icon(Icons.edit_outlined, color: AppColors.textPrimary),
               onPressed: () {
                 Navigator.push(
@@ -55,7 +57,7 @@ class ProductCard extends StatelessWidget {
             ),
             // ── Delete ──
             IconButton(
-              iconSize: 20,
+              iconSize: s(context, 20),
               icon: const Icon(Icons.delete_outline, color: AppColors.textPrimary),
               onPressed: (){
                 onpressed(product.id!);

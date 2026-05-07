@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ribhi/core/constant/text.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
 import 'package:ribhi/features/Expenses/domain/repo/ExpensesRepo.dart';
 import 'package:ribhi/features/auth/presentation/widget/already_haveAccount_button.dart';
 import 'package:ribhi/features/auth/presentation/widget/custom_text_field.dart';
@@ -22,14 +23,15 @@ class SignUpForm extends StatelessWidget {
   final String storeName;
   final double startingCapital;
   final String currency;
+
   /// Called with the store name after a successful sign-up.
   final void Function(String storeName)? onSignUpSuccess;
 
   // Repositories forwarded to AlreadyHaveAccountButton → SignInScreen
-  final ExpenseRepository          expensesRepository;
-  final ReportsRepositoryImpl      reportsRepository;
-  final ProductRepositoryImpl      productsRepository;
-  final SaleRepositoryImpl         saleRepository;
+  final ExpenseRepository expensesRepository;
+  final ReportsRepositoryImpl reportsRepository;
+  final ProductRepositoryImpl productsRepository;
+  final SaleRepositoryImpl saleRepository;
   final ProductLocalDataSourceImpl productLocalDataSource;
 
   const SignUpForm({
@@ -54,10 +56,11 @@ class SignUpForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(s(context, 20)),
       width: double.infinity,
-      constraints:BoxConstraints(
+      constraints: BoxConstraints(
         minHeight: MediaQuery.of(context).size.height * 0.9,
       ),
       decoration: const BoxDecoration(
@@ -75,13 +78,13 @@ class SignUpForm extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: s(context, 20)),
           CustomTextField(
             controller: emailController,
             hintText: 'User Name',
             prefixIcon: Icons.email,
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: s(context, 15)),
           CustomTextField(
             controller: passwordController,
             hintText: 'Password',
@@ -95,7 +98,7 @@ class SignUpForm extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: s(context, 15)),
           CustomTextField(
             controller: confirmController,
             hintText: 'Confirm Password',
@@ -109,33 +112,36 @@ class SignUpForm extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 25),
+          SizedBox(height: s(context, 25)),
           SignUpButton(
-            emailController:    emailController,
+            emailController: emailController,
             passwordController: passwordController,
-            confirmController:  confirmController,
-            onSignUpSuccess:    onSignUpSuccess,
+            confirmController: confirmController,
+            onSignUpSuccess: onSignUpSuccess,
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: s(context, 20)),
           const OrDivider(),
-          const SizedBox(height: 20),
+          SizedBox(height: s(context, 20)),
           AlreadyHaveAccountButton(
-            storeName:              storeName,
-            startingCapital:        startingCapital,
-            currency:               currency,
-            expensesRepository:     expensesRepository,
-            reportsRepository:      reportsRepository,
-            productsRepository:     productsRepository,
-            saleRepository:         saleRepository,
+            storeName: storeName,
+            startingCapital: startingCapital,
+            currency: currency,
+            expensesRepository: expensesRepository,
+            reportsRepository: reportsRepository,
+            productsRepository: productsRepository,
+            saleRepository: saleRepository,
             productLocalDataSource: productLocalDataSource,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: s(context, 12)),
           SocialButton(
             text: 'Continue with Google',
-            icon: Image.asset('assets/photo/flat-color-icons_google.png', height: 24),
+            icon: Image.asset(
+              'assets/photo/flat-color-icons_google.png',
+              height: 24,
+            ),
             onPressed: () {},
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: s(context, 10)),
           SocialButton(
             text: 'Continue with Facebook',
             icon: const Icon(Icons.facebook, color: Colors.blue, size: 28),

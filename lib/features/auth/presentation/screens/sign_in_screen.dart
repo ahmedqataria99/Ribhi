@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
 import 'package:ribhi/features/Expenses/domain/repo/ExpensesRepo.dart';
 import 'package:ribhi/features/auth/data/datasource/FirebaseauthSerivce.dart';
 import 'package:ribhi/features/auth/data/repositories/auth_repository_impl.dart';
@@ -80,6 +81,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AppAuthLoginSuccess) {
@@ -101,59 +103,59 @@ class _SignInScreenState extends State<SignInScreen> {
             body: SafeArea(
               child: SingleChildScrollView(
                 child: Column(
-                mainAxisSize: MainAxisSize.max,
+                  mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: EdgeInsets.all(s(context, 16.0)),
                       child: Column(
                         children: [
-                          const SizedBox(height: 50),
+                          SizedBox(height: s(context, 50)),
                           const SignInHeader(),
-                          Gap.expand(20)
-                      
-                          ],
+                          Gap(s(context, 20)),
+                        ],
                       ),
                     ),
                     SignInFormContainer(
-                            emailController: emailController,
-                            passwordController: passwordController,
-                            isPasswordHidden: isPasswordHidden,
-                            isLoading: isLoading,
-                      
-                            onPasswordVisibilityToggle: () {
-                              setState(() {
-                                isPasswordHidden = !isPasswordHidden;
-                              });
-                            },
-                      
-                            onSignInPressed: isLoading ? () {} : _onSignInPressed,
-                      
-                            onCreateAccountPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => BlocProvider(
-                                  create: (_) => SignupCubit(
-                                    AuthRepositoryImpl(
-                                      authService: FirebaseAuthService(),
-                                    ),
-                                  ),
-                                  child: SignUpScreen(
-                                    storeName: widget.storeName,
-                                    startingCapital: widget.startingCapital,
-                                    currency: widget.selectedCurrency,
-                                    expensesRepository: widget.expensesRepository,
-                                    reportsRepository: widget.reportsRepository,
-                                    productsRepository: widget.productsRepository,
-                                    saleRepository: widget.saleRepository,
-                                    productLocalDataSource: widget.productLocalDataSource,
-                                  ),
+                      emailController: emailController,
+                      passwordController: passwordController,
+                      isPasswordHidden: isPasswordHidden,
+                      isLoading: isLoading,
+
+                      onPasswordVisibilityToggle: () {
+                        setState(() {
+                          isPasswordHidden = !isPasswordHidden;
+                        });
+                      },
+
+                      onSignInPressed: isLoading ? () {} : _onSignInPressed,
+
+                      onCreateAccountPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BlocProvider(
+                              create: (_) => SignupCubit(
+                                AuthRepositoryImpl(
+                                  authService: FirebaseAuthService(),
                                 ),
                               ),
-                            );
-                          },),
-                        
+                              child: SignUpScreen(
+                                storeName: widget.storeName,
+                                startingCapital: widget.startingCapital,
+                                currency: widget.selectedCurrency,
+                                expensesRepository: widget.expensesRepository,
+                                reportsRepository: widget.reportsRepository,
+                                productsRepository: widget.productsRepository,
+                                saleRepository: widget.saleRepository,
+                                productLocalDataSource:
+                                    widget.productLocalDataSource,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),

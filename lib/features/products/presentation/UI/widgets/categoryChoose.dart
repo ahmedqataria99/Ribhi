@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ribhi/core/constant/text.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
 import 'package:ribhi/features/products/presentation/Statemanegemnt/products_cubit.dart';
 import 'package:ribhi/features/products/presentation/Statemanegemnt/products_state.dart';
 import 'package:ribhi/features/products/presentation/Statemanegemnt/productsform_cubit.dart';
@@ -14,28 +15,32 @@ class CategorySelector extends StatelessWidget {
     required String label,
     required bool selected,
     required VoidCallback onTap,
+    required BuildContext context,
   }) {
+    final s = AppSizes.s;
     return InkWell(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(s(context, 8)),
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: EdgeInsets.symmetric(
+          horizontal: s(context, 12),
+          vertical: s(context, 6),
+        ),
         decoration: BoxDecoration(
           color: selected ? const Color(0xFFF54500) : const Color(0xFFD6D4D4),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(s(context, 8)),
           border: Border.all(
             color: selected ? const Color(0xFFF54500) : const Color(0xFFD6D4D4),
           ),
         ),
-        child: Textapp(
-          label,
-          color: selected ? Colors.white : Colors.black,
-        ),
+        child: Textapp(label, color: selected ? Colors.white : Colors.black),
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
     return BlocBuilder<ProductsCubit, ProductsState>(
       builder: (context, productsState) {
         final categories = productsState.categories;
@@ -53,7 +58,7 @@ class CategorySelector extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                     color: Colors.black,
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: s(context, 6)),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
@@ -63,26 +68,32 @@ class CategorySelector extends StatelessWidget {
                         return buildCategoryChip(
                           label: category,
                           selected: selected,
+                          context: context,
                           onTap: () {
-                            context.read<ProductFormCubit>()
-                                .selectCategory(category);
+                            context.read<ProductFormCubit>().selectCategory(
+                              category,
+                            );
                           },
                         );
                       }),
+
                       /// Other +
                       buildCategoryChip(
                         label: "Other +",
                         selected: formState.category == "Other",
+                        context: context,
                         onTap: () {
-                          context.read<ProductFormCubit>()
-                              .selectCategory("Other");
+                          context.read<ProductFormCubit>().selectCategory(
+                            "Other",
+                          );
                         },
                       ),
                     ],
                   ),
+
                   /// Add Category Form
                   if (formState.category == "Other") ...[
-                    const SizedBox(height: 20),
+                    SizedBox(height: s(context, 20)),
                     const AddCategoryForm(),
                   ],
                 ],

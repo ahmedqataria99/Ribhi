@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
 import 'package:ribhi/features/products/presentation/UI/widgets/Categories.dart';
 import 'package:ribhi/features/products/presentation/UI/widgets/Search.dart';
 import 'package:ribhi/features/products/presentation/UI/widgets/productcard.dart';
@@ -14,14 +15,15 @@ class Productscreenbody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(s(context, 16)),
       child: Column(
         children: [
           Search(),
-          const Gap(20),
+          Gap(s(context, 20)),
           CategoryFilterBar(),
-          const Gap(20),
+          Gap(s(context, 20)),
           Expanded(
             child: BlocBuilder<ProductsCubit, ProductsState>(
               builder: (context, state) {
@@ -33,15 +35,12 @@ class Productscreenbody extends StatelessWidget {
                   itemCount: products.length,
                   itemBuilder: (context, index) {
                     final product = products[index];
-                    return ProductCard(
-                      product: product,
-                      onpressed: onpressed,);
+                    return ProductCard(product: product, onpressed: onpressed);
                   },
                 );
               },
             ),
           ),
-          
         ],
       ),
     );

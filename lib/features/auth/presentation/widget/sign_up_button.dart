@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ribhi/core/constant/text.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
 
 class SignUpButton extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final TextEditingController confirmController;
+
   /// Called with the username/store-name when sign-up succeeds.
   final void Function(String storeName)? onSignUpSuccess;
 
@@ -18,6 +20,7 @@ class SignUpButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -40,16 +43,21 @@ class SignUpButton extends StatelessWidget {
           // Notify the parent screen so it can save login state & navigate.
           onSignUpSuccess?.call(emailController.text.trim());
         },
-        style:  ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: const Color(0xffFF4D00),
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              )
-            ),
-        child: const Textapp('Sign Up' , color: Color(0xffFF4D00),fontsize: 16,fontWeight: FontWeight.bold,)
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: const Color(0xffFF4D00),
+          padding: EdgeInsets.symmetric(vertical: s(context, 15)),
+          minimumSize: Size(double.infinity, s(context, 50)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: const Textapp(
+          'Sign Up',
+          color: Color(0xffFF4D00),
+          fontsize: 16,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

@@ -9,7 +9,7 @@ import 'package:ribhi/core/database/DatabaseHelper.dart';
 import 'package:ribhi/core/theme/app_theme.dart';
 
 import 'package:ribhi/features/auth/data/datasource/auth_local_service.dart';
-import 'package:ribhi/features/auth/data/repositories/auth_repository_impl.dart'; // 👈 مهم
+import 'package:ribhi/features/auth/data/repositories/auth_repository_impl.dart'; 
 import 'package:ribhi/features/auth/presentation/manager/cubit/authCubit.dart';
 
 import 'package:ribhi/features/Dashboard/presentation/cubit/dashboard_cubit.dart';
@@ -46,17 +46,18 @@ import 'package:ribhi/features/auth/domain/repositories/auth_repository.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔥 أهم سطر
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
   if (!kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.windows ||
-       defaultTargetPlatform == TargetPlatform.linux   ||
-       defaultTargetPlatform == TargetPlatform.macOS)) {
+      defaultTargetPlatform == TargetPlatform.linux   ||
+      defaultTargetPlatform == TargetPlatform.macOS)) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
+    
   }
 
   final db = DatabaseHelper.instance;

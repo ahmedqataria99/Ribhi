@@ -1,31 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ribhi/core/constant/text.dart';
+import 'package:ribhi/core/theme/app_responsive.dart';
 import 'package:ribhi/features/products/presentation/Statemanegemnt/productsform_cubit.dart';
 import 'package:ribhi/features/products/presentation/Statemanegemnt/productsform_state.dart';
 
 class QuantityAlarmFields extends StatelessWidget {
   final bool isEdit;
 
-  const QuantityAlarmFields({
-    super.key,
-    required this.isEdit,
-  });
+  const QuantityAlarmFields({super.key, required this.isEdit});
 
   @override
   Widget build(BuildContext context) {
+    final s = AppSizes.s;
     return BlocBuilder<ProductFormCubit, ProductFormState>(
       builder: (context, state) {
-
         return Row(
           children: [
-
             /// Quantity
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   const Textapp(
                     "Quantity",
                     fontsize: 16,
@@ -33,7 +29,7 @@ class QuantityAlarmFields extends StatelessWidget {
                     color: Colors.black,
                   ),
 
-                  const SizedBox(height: 4),
+                  SizedBox(height: s(context, 4)),
 
                   TextFormField(
                     initialValue: isEdit ? state.quantity : '',
@@ -44,14 +40,18 @@ class QuantityAlarmFields extends StatelessWidget {
                       context.read<ProductFormCubit>().updateQuantity(value);
                     },
 
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        borderSide: BorderSide(color: Colors.grey),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(s(context, 8)),
+                        ),
+                        borderSide: const BorderSide(color: Colors.grey),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        borderSide: BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(s(context, 8)),
+                        ),
+                        borderSide: const BorderSide(color: Colors.black),
                       ),
                     ),
                   ),
@@ -59,14 +59,13 @@ class QuantityAlarmFields extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(width: 12),
+            SizedBox(width: s(context, 12)),
 
             /// Alarm Limit
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   const Textapp(
                     "Alarm limit",
                     fontsize: 16,
@@ -74,7 +73,7 @@ class QuantityAlarmFields extends StatelessWidget {
                     color: Colors.black,
                   ),
 
-                  const SizedBox(height: 4),
+                  SizedBox(height: s(context, 4)),
 
                   TextFormField(
                     initialValue: isEdit ? state.alarmLimit : '',
@@ -85,14 +84,18 @@ class QuantityAlarmFields extends StatelessWidget {
                       context.read<ProductFormCubit>().updateAlarmLimit(value);
                     },
 
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        borderSide: BorderSide(color: Colors.grey),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(s(context, 8)),
+                        ),
+                        borderSide: const BorderSide(color: Colors.grey),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        borderSide: BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(s(context, 8)),
+                        ),
+                        borderSide: const BorderSide(color: Colors.black),
                       ),
                     ),
                   ),
