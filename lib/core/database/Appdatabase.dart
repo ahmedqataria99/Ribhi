@@ -15,11 +15,9 @@ abstract class AppDatabase {
     List<Object?>? whereArgs,
   });
 
-  Future<int> delete(
-    String table, {
-    String? where,
-    List<Object?>? whereArgs,
-  });
+  Future<int> delete(String table, {String? where, List<Object?>? whereArgs});
+
+  Future<String> getDatabasePath();
 
   // 🔥 أهم تعديل
   Future<T> transaction<T>(Future<T> Function(AppDatabase txn) action);

@@ -9,6 +9,7 @@ import 'package:ribhi/features/auth/presentation/manager/cubit/authCubit.dart';
 import 'package:ribhi/features/auth/presentation/manager/cubit/auth_state.dart';
 import 'package:ribhi/features/auth/presentation/manager/cubit/signup_cubit.dart'; // 👈 مهم
 import 'package:ribhi/features/auth/presentation/screens/sign_up_screen.dart';
+import 'package:ribhi/core/security/admin_guard.dart';
 import 'package:ribhi/features/auth/presentation/widget/sign_in_form_container.dart';
 import 'package:ribhi/features/auth/presentation/widget/sign_in_header.dart';
 import 'package:ribhi/features/Dashboard/presentation/ui/screens/DashboardScreen.dart';
@@ -64,7 +65,15 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  void _goToDashboard() {
+  Future<void> _goToDashboard() async {
+    final isAdmin = await AdminGuard.canAccessAdmin();
+    if (!mounted) return;
+
+    if (isAdmin) {
+      Navigator.of(context).pushNamedAndRemoveUntil('/admin', (route) => false);
+      return;
+    }
+
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (_) => DashboardScreen(

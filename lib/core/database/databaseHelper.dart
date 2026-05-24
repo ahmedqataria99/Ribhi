@@ -6,6 +6,7 @@ import 'databaseSqlite.dart';
 class DatabaseHelper implements AppDatabase {
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
+  String? _dbPath;
 
   DatabaseHelper._init();
 
@@ -18,6 +19,7 @@ class DatabaseHelper implements AppDatabase {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
+    _dbPath = path;
 
     return await openDatabase(
       path,
@@ -110,6 +112,13 @@ class DatabaseHelper implements AppDatabase {
   }
 
   @override
+  Future<String> getDatabasePath() async {
+    if (_dbPath != null) return _dbPath!;
+    await _db;
+    return _dbPath!;
+  }
+
+  @override
   Future<void> close() async {
     if (_database != null) {
       await _database!.close();
@@ -117,6 +126,7 @@ class DatabaseHelper implements AppDatabase {
     }
   }
 }
+
 class _TransactionDatabase implements AppDatabase {
   final Transaction txn;
 
@@ -149,12 +159,7 @@ class _TransactionDatabase implements AppDatabase {
     String? where,
     List<Object?>? whereArgs,
   }) async {
-    return txn.update(
-      table,
-      values,
-      where: where,
-      whereArgs: whereArgs,
-    );
+    return txn.update(table, values, where: where, whereArgs: whereArgs);
   }
 
   @override
@@ -163,16 +168,17 @@ class _TransactionDatabase implements AppDatabase {
     String? where,
     List<Object?>? whereArgs,
   }) async {
-    return txn.delete(
-      table,
-      where: where,
-      whereArgs: whereArgs,
-    );
+    return txn.delete(table, where: where, whereArgs: whereArgs);
   }
 
   @override
   Future<T> transaction<T>(Future<T> Function(AppDatabase txn) action) {
     throw UnsupportedError("Nested transactions not supported");
+  }
+
+  @override
+  Future<String> getDatabasePath() async {
+    throw UnsupportedError('Transaction database does not expose a path');
   }
 
   @override

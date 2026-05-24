@@ -8,6 +8,7 @@ import 'package:ribhi/features/Initialization/data/datasource/SettingLocalData.d
 import 'package:ribhi/features/Initialization/data/model/settingModel.dart';
 import 'package:ribhi/features/auth/presentation/manager/cubit/authCubit.dart';
 import 'package:ribhi/features/auth/presentation/manager/cubit/auth_state.dart';
+import 'package:ribhi/core/security/admin_guard.dart';
 import 'package:ribhi/features/auth/presentation/screens/sign_in_screen.dart';
 import 'package:ribhi/features/Dashboard/presentation/ui/screens/DashboardScreen.dart';
 import 'package:ribhi/features/products/data/datasources/ProductLocalData.dart';
@@ -39,7 +40,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-
   late AnimationController _controller;
   late Animation<Offset> _slideAnim;
   late Animation<double> _fadeAnim;
@@ -56,15 +56,9 @@ class _SplashScreenState extends State<SplashScreen>
     _slideAnim = Tween<Offset>(
       begin: const Offset(0, -1),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
-    _fadeAnim = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(_controller);
+    _fadeAnim = Tween<double>(begin: 0, end: 1).animate(_controller);
 
     _controller.forward();
 
@@ -89,7 +83,15 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
-  void _navigateToDashboard() {
+  Future<void> _navigateToDashboard() async {
+    final isAdmin = await AdminGuard.canAccessAdmin();
+    if (!mounted) return;
+
+    if (isAdmin) {
+      Navigator.of(context).pushReplacementNamed('/admin');
+      return;
+    }
+
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (_) => DashboardScreen(
@@ -143,7 +145,6 @@ class _SplashScreenState extends State<SplashScreen>
           child: AnimatedBuilder(
             animation: _controller,
             builder: (context, child) {
-
               // 🌫️ البلور بس أثناء الخروج
               double blur = 0;
               if (_controller.status == AnimationStatus.reverse) {
@@ -155,10 +156,7 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Transform.translate(
                   offset: Offset(0, _slideAnim.value.dy * 200),
                   child: ImageFiltered(
-                    imageFilter: ImageFilter.blur(
-                      sigmaX: blur,
-                      sigmaY: blur,
-                    ),
+                    imageFilter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                     child: child,
                   ),
                 ),

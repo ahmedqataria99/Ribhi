@@ -44,7 +44,13 @@ dependencies:
   gap: ^3.0.1
   flutter_svg: ^2.0.10+1
   modal_progress_hud_nsn: ^0.5.1
+  firebase_core: ^4.7.0
   firebase_auth: ^6.2.0
+  cloud_firestore: ^6.2.0
+  firebase_storage: ^13.3.0
+  connectivity_plus: ^6.0.0
+  path_provider: ^2.1.0
+  sqflite_common_ffi: ^2.4.0
   dartz: ^0.10.1
   shared_preferences: ^2.3.2
   flutter_launcher_icons: "^0.13.1"

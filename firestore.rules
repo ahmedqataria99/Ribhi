@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can read and write their own subscription data
+    match /subscriptions/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Users can read and write their own license keys
+    match /license_keys/{keyId} {
+      allow read, write: if request.auth != null &&
+        (request.auth.uid == resource.data.userId ||
+         request.auth.uid == resource.data.generatedBy);
+    }
+
+    // Users can read pending requests (for admin purposes)
+    match /payment_requests/{requestId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == resource.data.uid;
+    }
+
+    // Admin operations (you can add admin user IDs here)
+    function isAdmin() {
+      return request.auth != null && request.auth.uid in ['admin_user_id_here'];
+    }
+
+    // Allow admins to manage all data
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
